@@ -6,20 +6,14 @@ import ecgclassification.config as config
 
 
 # Counts the occurrence of annotations in each record in the folder
-def count_total_occurrences(filepath, patients=[]):
-    total = Counter()
-    for file in os.listdir(filepath):
-        if file.endswith('atr'):
-            record = wfdb.rdrecord(filepath + file.split('.')[0])
-
-            if patients and not int(record.record_name) in patients:
-                continue
-            annotation = wfdb.rdann(filepath + record.record_name, 'atr')
-            # occurrence = [[x, annotation.symbol.count(x)] for x in set(annotation.symbol)]]
-
-            occurrence = Counter(annotation.symbol)
-            total += occurrence
-
+def count_total_occurrences(occurrences):
+    total = {}
+    for k, v in occurrences.items():
+        for key, value in v.items():
+            if key not in total:
+                total[key] = value
+            else:
+                total[key] += value
     return total
 
 
