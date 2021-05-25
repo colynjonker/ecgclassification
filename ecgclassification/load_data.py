@@ -3,10 +3,13 @@ import os
 import wfdb
 
 from datetime import datetime
+
+from scipy.signal import resample
+
 from .beat import *
 
 
-def format_signal(beat_signal, mid, extend_signal =True, half_window=config.hw):
+def format_signal(beat_signal, mid, extend_signal=True, half_window=config.hw):
     signal = list(beat_signal)
     if not signal:
         return None
@@ -32,7 +35,7 @@ def format_signal(beat_signal, mid, extend_signal =True, half_window=config.hw):
     return None
 
 
-def load_beats(filepath, patients=[], signal_format='ES'):
+def load_beats(filepath, patients=[]):
     beats, measure_time, end = [], datetime.now(), 0
     for file in os.listdir(filepath):
         if file.endswith('.atr'):
@@ -45,42 +48,29 @@ def load_beats(filepath, patients=[], signal_format='ES'):
             annotation = wfdb.rdann(filepath + record.record_name, 'atr')
             signal = np.array([i[0] for i in record.p_signal])
             scale = config.signal_frequency / 360
+            signal = resample(signal, int(scale*len(signal)))
 
-            anno_sample = [int(i*scale) for i in annotation.sample]
+            anno_sample = [int(i * scale) for i in annotation.sample]
 
             # - 3
-            for i in range(annotation.ann_len - 3 ):
+            for i in range(annotation.ann_len - 3):
                 ba = annotation.symbol[i]
-                print(ba)
                 if ba in config.relsym:
                     beat = Beat(ba, record.record_name)
                     beat.start = end
-                    end = int((anno_sample[i] + anno_sample[i+1]) / 2)
+                    end = int((anno_sample[i] + anno_sample[i + 1]) / 2)
                     beat.end = end
-                    if signal_format == 'OS':
-                        beat.signal = signal[anno_sample[i] - config.hw:anno_sample[i] + config.hw]
-                    else:
-                        beat_signal = signal[beat.start:beat.end]
-                        beat.mid = anno_sample[i] - beat.start
-                        if signal_format == 'ES':
-                            extend_signal = True
-                        elif signal_format == 'IS':
-                            extend_signal = None
-                        elif signal_format == 'MS':
-                            extend_signal = False
-                        beat.signal = format_signal(beat_signal, beat.mid, extend_signal=extend_signal)
+                    beat_signal = signal[beat.start:beat.end]
+                    beat.mid = anno_sample[i] - beat.start
+                    beat.signal = format_signal(beat_signal, beat.mid)
                     if beat.signal:
                         beats.append(beat)
     print('Loading beats took {}s'.format(round((datetime.now() - measure_time).total_seconds(), 1)))
     return beats
 
 
-def load_data(filepath, classes='aami', patients=[], signal_format='ES'):
-    if signal_format == 'OS':
-        pass
-    else:
-        pass
-        beats = load_beats(filepath, patients=patients, signal_format=signal_format)
+def load_data(filepath, classes='aami', patients=[]):
+    beats = load_beats(filepath, patients=patients)
     measure_time = datetime.now()
     data = {'train': [[], []], 'valid': [[], []], 'tests': [[], []]}
     for b in beats:
@@ -97,5 +87,10 @@ def load_data(filepath, classes='aami', patients=[], signal_format='ES'):
             label = b.aami_num
         else:
             label = ba_num(b.ba)
-
-
+        data[s][0].append(b.signal)
+        data[s][1].append(label)
+    for k in data:
+        data[k][0] = np.asarray(data[k][0])
+        data[k][1] = np.array(data[k][1])
+    print('Loading the signals took: {}s'.format(round((datetime.now() - measure_time).total_seconds(), 1)))
+    return data
