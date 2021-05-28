@@ -103,6 +103,10 @@ def build_dataset(df, all_sequences, all_labels):
 
 X_train, y_train = build_dataset(train, all_sequences, all_labels)
 X_val, y_val = build_dataset(validation, all_sequences, all_labels)
+print(X_train)
+print(X_train[0])
+print(X_train[0][0])
+print(y_train)
 
 print(X_train.shape, y_train.shape)
 

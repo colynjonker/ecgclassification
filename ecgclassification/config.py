@@ -21,5 +21,5 @@ tests = [100, 103, 105, 111, 113, 117, 121, 123, 200, 202, 210, 212, 213, 214, 2
 
 # All relevant symbols for this research.
 totalsym = list('NLRBAaJSVrFejnE/fQ?')
-relsym = list('NLRejAaSJV!EF/fQ')
+relsym = list('NLRejAaSJVEF/fQ')
 

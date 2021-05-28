@@ -6,7 +6,7 @@ import datetime
 from scipy import signal
 import numpy as np
 
-import ecgclassification
+import ecgclassification as ecgc
 import ecgclassification.config as config
 from scipy.signal import savgol_filter
 
@@ -70,16 +70,19 @@ def calculate_accuracy(cm):
     return calculate_metrics(cm, 'VEB'), calculate_metrics(cm, 'SVEB'), general_acc
 
 
-def evaluate_model(m, x_tests, y_tests, input_format="ba_num", keras_evaluation=True, normalize_cm=None):
+def evaluate_model(m, x_tests, y_tests, input_format="aami_num", keras_evaluation=True, normalize_cm=None):
     if keras_evaluation:
         m.evaluate(x_tests, y_tests)
-    prediction = m.predict(x_tests, verbose=2)
+    prediction = m.predict(x_tests, verbose=1)
     prediction = prediction.argmax(axis=-1)
+
     if input_format == "ba_num":
         ba_pred = prediction
         ba_true = y_tests
-        aami_pred = [ecgc.aami_num(ecgc.config.relsym[ba]) for ba in ba_pred]
-        aami_true = [ecgc.aami_num(ecgc.config.relsym[ba]) for ba in ba_true]
+        print(ba_pred)
+        print(ba_true)
+        aami_pred = [ecgc.ba_num(ecgc.config.relsym[ba]) for ba in ba_pred]
+        aami_true = [ecgc.ba_num(ecgc.config.relsym[ba]) for ba in ba_true]
     elif input_format == "aami_num":
         aami_pred = prediction
         aami_true = y_tests
