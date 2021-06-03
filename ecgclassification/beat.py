@@ -18,7 +18,7 @@ def ba_aami(ba):
     elif ba in set('AaSJ'):
         # SVEB class includes annotations: A, a, S, J
         return 'SVEB'
-    elif ba in set('VE'):
+    elif ba in set('VE!'):
         # TODO: Determine if class ! should be included in VEB classes
         # VEB class includes annotations: V, E, {!}
         return 'VEB'
@@ -38,8 +38,8 @@ def ba_num(ba):
     elif ba in set('AaSJ'):
         # SVEB class includes annotations: A, a, S, J
         return 1
-    elif ba in set('VE'):
-        # TODO: Determine if class ! should be included in VEB classes
+    elif ba in set('VE!'):
+
         # VEB class includes annotations: V, E, {!}
         return 2
     elif ba == 'F':

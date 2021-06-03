@@ -98,6 +98,22 @@ def visualize_beat(beat, title=None, color='tab:green', visualise_channels=False
         plt.show()
 
 
+def visualize_signal(signal, title=None, color='tab:red'):
+    x = [i / config.signal_frequency for i in range(config.window)]
+
+    fig, ax = plt.subplots()
+    if title is None:
+        title = "Example signal"
+    plt.title(title, fontsize=20)
+    plt.locator_params(axis='y')
+    ax.plot(x, signal, '-D', markevery=[int(config.window / 2)], mfc='b', color=color)
+    ax.set_xlabel('Time in s', fontsize=18)
+    ax.set_ylabel('Voltage in mV', fontsize=18)
+    plt.show()
+
+
+
+
 
 #
 

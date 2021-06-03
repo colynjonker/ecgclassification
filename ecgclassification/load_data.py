@@ -63,6 +63,7 @@ def load_beats(filepath, patients=[]):
                     beat_signal = signal[beat.start:beat.end]
                     beat.mid = anno_sample[i] - beat.start
                     beat.signal = format_signal(beat_signal, beat.mid)
+                    #beat.signal = beat_signal
                     if beat.signal:
                         beats.append(beat)
     print('Loading beats took {}s'.format(round((datetime.now() - measure_time).total_seconds(), 1)))
@@ -94,3 +95,24 @@ def load_data(filepath, classes='aami', patients=[]):
         data[k][1] = np.array(data[k][1])
     print('Loading the signals took: {}s'.format(round((datetime.now() - measure_time).total_seconds(), 1)))
     return data
+
+
+def load_data_v2(filepath, patients=[], classes='aami'):
+    beats = load_beats(filepath, patients=patients)
+    measure_time = datetime.now()
+    data = {'data': [[], []]}
+    for b in beats:
+        s = 'data'
+
+        if classes == 'aami':
+            label = b.aami_num
+        else:
+            label = ba_num(b.ba)
+        data[s][0].append(b.signal)
+        data[s][1].append(label)
+    for k in data:
+        data[k][0] = np.asarray(data[k][0])
+        data[k][1] = np.array(data[k][1])
+    print('Loading the signals took: {}s'.format(round((datetime.now() - measure_time).total_seconds(), 1)))
+    return data
+

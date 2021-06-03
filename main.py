@@ -103,12 +103,24 @@ def build_dataset(df, all_sequences, all_labels):
 
 X_train, y_train = build_dataset(train, all_sequences, all_labels)
 X_val, y_val = build_dataset(validation, all_sequences, all_labels)
+
 print(X_train)
 print(X_train[0])
 print(X_train[0][0])
 print(y_train)
 
 print(X_train.shape, y_train.shape)
+signal = X_train[0]
+x = [i / 360 for i in range(2160)]
+
+fig, ax = plt.subplots()
+title = "example"
+plt.title(title, fontsize=20)
+plt.locator_params(axis='y')
+ax.plot(x, signal, '-D', markevery=[int(1024 / 2)], mfc='b', color='tab:red')
+ax.set_xlabel('Time in s', fontsize=18)
+ax.set_ylabel('Voltage in mV', fontsize=18)
+plt.show()
 
 sequence_size = X_train.shape[1]
 n_features = 1
